@@ -48,6 +48,9 @@ The goals / steps of this project are the following:
 [15]: ./writeup/15.png "Traffic Sign 15"
 [28]: ./writeup/28.png "Traffic Sign 28"
 
+[bar_chart_prediction_softmax]: ./writeup/bar_chart_prediction_softmax.png "Top 5 softmax probabilities"
+[recall_prec_bar]: ./writeup/recall_prec_bar.png "Recall and precision"
+
 [conv1_i1]: ./writeup/conv1_i1.png "Conv1 input"
 [conv1_i2]: ./writeup/conv1_i2.png "Conv1 input"
 [conv1_o1]: ./writeup/conv1_o1.png "Conv1 output"
@@ -109,6 +112,7 @@ Rendering some randomly selected example images from the training set we can vis
 2) The data was grayscaled in an attempt to improve the validation accurancy; ultimately we decided against grayscaling, because this causes valuable information to be lost,
 e.g. lots of red pixels make the image llikely to be a stop sign, whereas lots of blue pixels would decrease the likelihood of a stop sign.
 Here is an example of a traffic sign image before and after grayscaling.
+
 ![alt text][32gray]
 
 
@@ -161,15 +165,15 @@ To train the model, we used:
 * a learning rate of 0.001,
 * 10 epochs with a batch size of 128,
 * mu = 0 and sigma = 0.1 for the truncated normal distribution of the weights,
-* a keep probability of 0.75 for the dropout,
-* the balanced training data described above.
+* a keep probability of 0.5 for the dropout,
+* the balanced training data described above (86,000 images, 2,000 from each traffic sign class).
 
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
 My final model results were:
-* training set accuracy of ?
-* validation set accuracy of 0.946
-* test set accuracy of 0.937
+* training set accuracy of 0.997
+* validation set accuracy of 0.961
+* test set accuracy of 0.938
 
 We started with the vanilla LeCun CNN from the lecture, only adapting the output vector to the different number of labels.
 Changing the number of epochs and the batch size did not improve the validation accuracy to a satisfactory level, so we tried to feed grayscaled images to the model.
@@ -197,31 +201,66 @@ Here are the results of the prediction:
 
 | Image			        |     Prediction	        					| 
 |:---------------------:|:---------------------------------------------:|
-| 50 km/h	      		| Bumpy Road					 				|
+| 50 km/h	      		| 30 km/h					 				|
 | Yield					| Yield											|
-| Stop Sign      		| Stop sign   									|
-| No vehicles      		| Stop sign   									|
-| Children crossing      		| Stop sign   									|
+| Stop Sign      		| Stop Sign   									|
+| No vehicles      		| No vehicles   									|
+| Children crossing      		| Children crossing   									|
 
 
-The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of ...
+The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of 0.938
 
 #### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
-The code for making predictions on my final model is located in the 11th cell of the Ipython notebook.
-
-For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
-
-| Probability         	|     Prediction	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| .60         			| Stop sign   									| 
-| .20     				| U-turn 										|
-| .05					| Yield											|
-| .04	      			| Bumpy Road					 				|
-| .01				    | Slippery Road      							|
+Plotting the top 5 softmax probabilities for the traffic sign predictions, we can see that that the CNN is very certain about its
+predictions, with probabilities of close to 100% for all but 50 km/h sign (class 2) - which is also the only false prediction. The second highest probability of  ~ 1% for 50 km/h sign is given to the correct class.
 
 
-For the second image ... 
+![alt text][bar_chart_prediction_softmax]
+
+
+real class: 13
+1. predicted class 13 probability 1.0000
+2. predicted class 0 probability 0.0000
+3. predicted class 1 probability 0.0000
+4. predicted class 2 probability 0.0000
+5. predicted class 3 probability 0.0000
+
+real class: 14
+1. predicted class 14 probability 0.9988
+2. predicted class 25 probability 0.0012
+3. predicted class 17 probability 0.0000
+4. predicted class 26 probability 0.0000
+5. predicted class 15 probability 0.0000
+
+real class: 15
+1. predicted class 15 probability 0.9989
+2. predicted class 9 probability 0.0004
+3. predicted class 26 probability 0.0004
+4. predicted class 22 probability 0.0001
+5. predicted class 29 probability 0.0001
+
+real class: 2
+1. predicted class 1 probability 0.9886
+2. predicted class 2 probability 0.0113
+3. predicted class 4 probability 0.0001
+4. predicted class 7 probability 0.0000
+5. predicted class 0 probability 0.0000
+
+real class: 28
+1. predicted class 28 probability 1.0000
+2. predicted class 23 probability 0.0000
+3. predicted class 20 probability 0.0000
+4. predicted class 41 probability 0.0000
+5. predicted class 36 probability 0.0000
+
+
+Recall and precision:
+
+![alt text][recall_prec_bar]
+
+The model seems to have the biggest problems in correctly classifying the Double curve sign and the Pedestrians sign.
+We can see that in the test set the recall and precision for both Speed limit (30km/h) and Speed limit (50km/h) are fairly high.
 
 ### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
 #### 1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
